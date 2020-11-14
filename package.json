@@ -1,0 +1,43 @@
+{
+  "name": "serverlesstypescript",
+  "version": "1.0.0",
+  "description": "Serverless webpack example using Typescript",
+  "main": "handler.js",
+  "scripts": {
+    "dev": "serverless offline",
+    "deploy:prod": "NODE_ENV=production serverless deploy --stage prod",
+    "deploy:dev": "NODE_ENV=development serverless deploy --stage dev",
+    "list:prod": "serverless deploy list functions --stage prod",
+    "list:dev": "serverless deploy list functions --stage dev",
+    "invoke:cloud:prod": "serverless invoke --stage prod -l --function",
+    "invoke:cloud:dev": "serverless invoke --stage dev -l --function",
+    "invoke:local": "serverless invoke local --function",
+    "logs:prod": "sls logs --stage prod --function",
+    "logs:dev": "sls logs --stage prod --function"
+  },
+  "dependencies": {
+    "@types/puppeteer": "^5.4.0",
+    "axios": "^0.21.0",
+    "puppeteer": "^5.4.1",
+    "source-map-support": "^0.5.10"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.17",
+    "@types/node": "^10.12.18",
+    "@types/serverless": "^1.72.5",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "eslint": "^7.13.0",
+    "fork-ts-checker-webpack-plugin": "^3.0.1",
+    "serverless-dotenv-plugin": "^3.1.0",
+    "serverless-offline": "^6.8.0",
+    "serverless-webpack": "^5.2.0",
+    "ts-loader": "^5.3.3",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.2.4",
+    "webpack": "^4.29.0",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
+  "license": "MIT"
+}
