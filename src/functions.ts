@@ -1,8 +1,10 @@
 import "source-map-support/register";
-import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
+import {
+  APIGatewayProxyHandler,
+  APIGatewayProxyResult,
+  APIGatewayProxyEvent,
+} from "aws-lambda";
 import { isString } from "./util";
-import axios from "axios";
-import { setupPuppeteer } from "./puppeteer";
 import { Parser } from "./Parser";
 import { Navigator } from "./Navigator";
 
@@ -17,15 +19,20 @@ interface InputWithSelector extends InputType {
   limit?: number;
 }
 
+const parseInput = (event: APIGatewayProxyEvent) => {
+  let inputString = isString(event.body)
+    ? event.body
+    : JSON.stringify(event.body);
+  let input = JSON.parse(inputString);
+  return input;
+};
+
 export const getLinks: APIGatewayProxyHandler = async (
   event,
   _context,
   callback
 ): Promise<APIGatewayProxyResult> => {
-  let inputString = isString(event.body)
-    ? event.body
-    : JSON.stringify(event.body);
-  let input: InputWithSelector = JSON.parse(inputString);
+  let input: InputWithSelector = parseInput(event);
   const navigator = new Navigator(input.puppeteer);
   await navigator.init();
   await navigator.getHtml(input.url);
@@ -51,32 +58,16 @@ export const getHtml: APIGatewayProxyHandler = async (
   callback
 ): Promise<APIGatewayProxyResult> => {
   try {
-    // Get provided url
-    let inputString = isString(event.body)
-      ? event.body
-      : JSON.stringify(event.body);
-    let input: InputType = JSON.parse(inputString);
-
-    // Get body of page from url
-    let body: string;
-    if (input.puppeteer) {
-      const browser = await setupPuppeteer();
-      const page = await browser.newPage();
-      await page.goto(input.url);
-      body = await page.evaluate(() => document.body.innerHTML);
-      await browser.close();
-    } else {
-      let res = await axios.get(input.url);
-      body = res.data;
-      if (res.status !== 200) {
-        throw new Error(`Site ${input.url} could not be reached.`);
-      }
+    let input: InputType = parseInput(event);
+    const navigator = new Navigator(input.puppeteer);
+    await navigator.init();
+    await navigator.getHtml(input.url);
+    if (navigator.err) {
+      callback(navigator.err);
     }
-
-    // Return body.
     let response = {
       statusCode: 200,
-      body,
+      body: navigator.html,
     };
     return response;
   } catch (err) {
