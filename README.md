@@ -1,4 +1,4 @@
-# Serverless Webscraping Functions
+# 🚀 Serverless Webscraping Functions
 
 Endpoints that do webscraping for you! Just send over the options provided for each endpoint and the Lambda function will scrape the page, and then return the results of your query.
 
