@@ -16,8 +16,10 @@
     "logs:dev": "sls logs --stage prod --function"
   },
   "dependencies": {
+    "@types/cheerio": "^0.22.22",
     "@types/puppeteer": "^5.4.0",
     "axios": "^0.21.0",
+    "cheerio": "^1.0.0-rc.3",
     "puppeteer": "^5.4.1",
     "source-map-support": "^0.5.10"
   },

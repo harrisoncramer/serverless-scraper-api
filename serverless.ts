@@ -4,7 +4,6 @@ import * as funcs from "./src/functions";
 // Create our POST functions
 const functions: Functions = {};
 for (const func in funcs) {
-  console.log(func);
   functions[func] = {
     handler: `index.${func}`,
     events: [
@@ -19,9 +18,7 @@ for (const func in funcs) {
 }
 
 const serverlessConfiguration: Serverless = {
-  service: {
-    name: "serverless-typescript-template",
-  },
+  service: "serverless-typescript-template",
   frameworkVersion: "2",
   custom: {
     dotenv: {
