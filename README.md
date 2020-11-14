@@ -16,12 +16,10 @@ This is an alias for the `serverless offline` command which uses the serverless-
 
 The functions can then be hit with Postman, Curl, or another service.
 
-To run a function in isolation use the `yarn local` command, followed by the function name. This is an alias for `serverless invoke local --function`
-
-To run the same function on the cloud, after deployment, use `yarn cloud`
-
 ## Deployment
 
-`yarn deploy`
+`yarn deploy:prod`
 
-This command set the `NODE_ENV` to production, loading the correct environment variables, and then deploys the function to the cloud (configuration inside the `serverless.ts` file).
+This command set the `NODE_ENV` to production, loading the correct environment variables, and then deploys the function to the cloud (configuration inside the `serverless.ts` file) on the prod stage.
+
+You can also deploy to the dev stage with the `yarn deploy:dev` command, which is an alias for the development stage with serverless.
