@@ -27,6 +27,7 @@ const serverlessConfiguration: Serverless = {
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,
+      forceExclude: ["puppeteer"],
     },
   },
   plugins: [
