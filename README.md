@@ -14,7 +14,10 @@ To spin up the development server locally, run `yarn dev`
 
 This is an alias for the `serverless offline` command which uses the serverless-offline plugin to spin up a development server with our lambdas at various endpoints.
 
-The functions can then be hit with Postman, Curl, or another service.
+The functions can then be hit with Postman, Curl, or another service. For example, send a POST request to the `/dev/getLinks` endpoint with the following JSON data:
+`{ "url": "https://www.yourwebsite.com", "puppeteer": false, "limit": 7 }`
+
+This will return up to seven of the links on the page that you feed into the API.
 
 ## Deployment
 
