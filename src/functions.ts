@@ -1,8 +1,9 @@
 import "source-map-support/register";
 import {
-  APIGatewayProxyHandler,
   APIGatewayProxyResult,
   APIGatewayProxyEvent,
+  Context,
+  Callback,
 } from "aws-lambda";
 import { isString } from "./util";
 import { Parser } from "./Parser";
@@ -19,6 +20,12 @@ interface InputWithSelector extends InputType {
   limit?: number;
 }
 
+type handler = (
+  event: APIGatewayProxyEvent,
+  context: Context,
+  callback: Callback<APIGatewayProxyResult>
+) => Promise<APIGatewayProxyResult>;
+
 const parseInput = (event: APIGatewayProxyEvent) => {
   let inputString = isString(event.body)
     ? event.body
@@ -27,18 +34,31 @@ const parseInput = (event: APIGatewayProxyEvent) => {
   return input;
 };
 
-export const getLinks: APIGatewayProxyHandler = async (
-  event,
-  _context,
-  callback
-): Promise<APIGatewayProxyResult> => {
+const createError = (e: Error): APIGatewayProxyResult => {
+  // Log error and return to user.
+  console.error("❌", e);
+  return {
+    statusCode: 502,
+    body: JSON.stringify({ error: e.message }),
+  };
+};
+
+const createSuccess = (body: string): APIGatewayProxyResult => {
+  // Log success and return it.
+  //console.log(body);
+  return {
+    statusCode: 200,
+    body,
+  };
+};
+
+export const getLinks: handler = async (event, context) => {
   let input: InputWithSelector = parseInput(event);
   const navigator = new Navigator(input.puppeteer);
   await navigator.init();
   await navigator.getHtml(input.url);
   if (navigator.err) {
-    // If navigator fails, throw callback...
-    callback(navigator.err);
+    return createError(navigator.err);
   }
   const parser = new Parser(navigator.html, input.selector);
   const links = parser.getLinks({
@@ -46,32 +66,20 @@ export const getLinks: APIGatewayProxyHandler = async (
     limit: input.limit,
   });
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ links }),
-  };
+  return createSuccess(JSON.stringify({ links }));
 };
 
-export const getHtml: APIGatewayProxyHandler = async (
-  event,
-  _context,
-  callback
-): Promise<APIGatewayProxyResult> => {
+export const getHtml: handler = async (event, context) => {
   try {
     let input: InputType = parseInput(event);
     const navigator = new Navigator(input.puppeteer);
     await navigator.init();
     await navigator.getHtml(input.url);
     if (navigator.err) {
-      callback(navigator.err);
+      return createError(navigator.err);
     }
-    let response = {
-      statusCode: 200,
-      body: navigator.html,
-    };
-    return response;
+    return createSuccess(navigator.html);
   } catch (err) {
-    console.error(err);
-    callback(err);
+    return createError(err);
   }
 };

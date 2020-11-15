@@ -11,17 +11,21 @@ export class Navigator {
     public initialized: boolean = false
   ) {}
 
+  // If puppeteer passed during creation, create browser
   async init() {
-    try {
-      this.browser = await setupPuppeteer();
-      this.initialized = true;
-    } catch (err) {
-      this.err = err;
+    if (this.isPuppeteer) {
+      await setupPuppeteer()
+        .then((browser) => {
+          this.browser = browser;
+        })
+        .catch((err) => {
+          this.err = err;
+        });
     }
+    this.initialized = true;
   }
 
   async getHtml(link: string) {
-    // If requires browser but not initialized, throw error.
     if (!this.initialized && this.isPuppeteer) {
       console.log(this.err);
       throw new Error("Navigator is not initialized.");
@@ -41,7 +45,10 @@ export class Navigator {
         }
       }
     } catch (err) {
-      await this.browser.close();
+      // If browser exists and is connected, close it.
+      if (this.browser && this.browser.isConnected()) {
+        await this.browser.close();
+      }
       this.err = err;
     }
   }
