@@ -1,57 +1,110 @@
 import puppeteer from "puppeteer";
-import axios from "axios";
 import { setupPuppeteer } from "./puppeteer";
 
-export class Navigator {
+export class PuppeteerNavigator {
   browser: puppeteer.Browser;
   page: puppeteer.Page;
-  err: Error;
   html: string;
-  constructor(
-    public isPuppeteer: boolean = false,
-    public initialized: boolean = false
-  ) {}
+  initialized: boolean = false;
 
-  // If puppeteer passed during creation, create browser and page
-  async init() {
-    if (this.isPuppeteer) {
-      try {
-        const browser = await setupPuppeteer();
-        this.browser = browser;
-        const page = await this.browser.newPage();
-        await setPageBlockers(page);
-        this.page = page;
-      } catch (err) {
-        this.err = err;
-      }
-      this.initialized = true;
+  // Close down puppeteer on error and return error
+  private async handleError(err: Error): Promise<Error> {
+    if (this.browser && this.browser.isConnected()) {
+      await this.browser.close();
+    }
+    return Promise.reject(err);
+  }
+
+  // If handler does not initialize the browser, throw error.
+  private isInitialized(): void {
+    if (!this.initialized) {
+      throw new Error("Puppeteer is not initialized!");
     }
   }
 
-  async getHtml(link: string) {
-    if (!this.initialized && this.isPuppeteer) {
-      console.log(this.err);
-      throw new Error("Navigator is not initialized.");
+  // Initialize
+  async init(): Promise<void | Error> {
+    try {
+      const browser = await setupPuppeteer();
+      this.browser = browser;
+      const page = await this.browser.newPage();
+      await setPageBlockers(page);
+      this.page = page;
+    } catch (err) {
+      return await this.handleError(err);
     }
 
+    this.initialized = true;
+  }
+
+  async close(): Promise<void> {
+    this.isInitialized();
+    await this.browser.close();
+  }
+
+  ///////////////
+  /// METHODS ///
+  ///////////////
+
+  async goto(link: string) {
+    this.isInitialized();
     try {
-      if (this.isPuppeteer) {
-        await this.page.goto(link);
-        this.html = await this.page.evaluate(() => document.body.innerHTML);
-        await this.browser.close();
-      } else {
-        let res = await axios.get(link);
-        this.html = res.data;
-        if (res.status !== 200) {
-          throw new Error(`Site ${link} could not be reached.`);
-        }
-      }
+      await this.page.goto(link);
     } catch (err) {
-      // If browser exists and is connected, close it.
-      if (this.browser && this.browser.isConnected()) {
-        await this.browser.close();
-      }
-      this.err = err;
+      return await this.handleError(err);
+    }
+  }
+
+  async click(selector: string) {
+    this.isInitialized();
+    try {
+      await this.page.click(selector);
+    } catch (err) {
+      return await this.handleError(err);
+    }
+  }
+
+  async clickAndWait(selector: string) {
+    this.isInitialized();
+    try {
+      await Promise.all([
+        this.page.click(selector),
+        this.page.waitForNavigation(),
+      ]);
+    } catch (err) {
+      return await this.handleError(err);
+    }
+  }
+
+  async clickAndWaitForResponse(selector: string, url: string) {
+    this.isInitialized();
+    try {
+      await Promise.all([
+        this.page.click(selector),
+        this.page.waitForResponse(url),
+      ]);
+    } catch (err) {
+      return await this.handleError(err);
+    }
+  }
+
+  async setHtml(link: string) {
+    this.isInitialized();
+    try {
+      await this.page.goto(link);
+      this.html = await this.page.evaluate(() => document.body.innerHTML);
+    } catch (err) {
+      return await this.handleError(err);
+    }
+  }
+
+  async setHtmlFromCurrentPage() {
+    this.isInitialized();
+    try {
+      const html = await this.page.evaluate(() => document.body.innerHTML);
+      this.html = html;
+    } catch (err) {
+      return await this.handleError(err);
     }
   }
 }

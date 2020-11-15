@@ -6,7 +6,6 @@ const functions: Functions = {};
 for (const func in funcs) {
   functions[func] = {
     handler: `index.${func}`,
-    timeout: 20,
     events: [
       {
         http: {

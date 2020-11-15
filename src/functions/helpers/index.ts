@@ -1,6 +1,6 @@
 import "source-map-support/register";
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from "aws-lambda";
-import { isString } from "../util";
+import { isString } from "../../util";
 
 export const parseInput = (event: APIGatewayProxyEvent) => {
   let inputString = isString(event.body)

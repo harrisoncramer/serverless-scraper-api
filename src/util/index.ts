@@ -9,3 +9,6 @@ export const limitList = <T>(limit: number | undefined) => (
   _val: T,
   index: number
 ) => (limit ? index + 1 <= limit : true);
+
+export const wait = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
