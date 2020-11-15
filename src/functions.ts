@@ -5,9 +5,9 @@ import {
   Context,
   Callback,
 } from "aws-lambda";
-import { isString } from "./util";
 import { Parser } from "./Parser";
 import { Navigator } from "./Navigator";
+import { parseInput, createError, createSuccess } from "./helpers";
 
 interface InputType {
   url: string;
@@ -26,33 +26,7 @@ type handler = (
   callback: Callback<APIGatewayProxyResult>
 ) => Promise<APIGatewayProxyResult>;
 
-const parseInput = (event: APIGatewayProxyEvent) => {
-  let inputString = isString(event.body)
-    ? event.body
-    : JSON.stringify(event.body);
-  let input = JSON.parse(inputString);
-  return input;
-};
-
-const createError = (e: Error): APIGatewayProxyResult => {
-  // Log error and return to user.
-  console.error("❌", e);
-  return {
-    statusCode: 502,
-    body: JSON.stringify({ error: e.message }),
-  };
-};
-
-const createSuccess = (body: string): APIGatewayProxyResult => {
-  // Log success and return it.
-  //console.log(body);
-  return {
-    statusCode: 200,
-    body,
-  };
-};
-
-export const getLinks: handler = async (event, context) => {
+export const getLinks: handler = async (event, _context) => {
   let input: InputWithSelector = parseInput(event);
   const navigator = new Navigator(input.puppeteer);
   await navigator.init();
@@ -69,7 +43,7 @@ export const getLinks: handler = async (event, context) => {
   return createSuccess(JSON.stringify({ links }));
 };
 
-export const getHtml: handler = async (event, context) => {
+export const getHtml: handler = async (event, _context) => {
   try {
     let input: InputType = parseInput(event);
     const navigator = new Navigator(input.puppeteer);
