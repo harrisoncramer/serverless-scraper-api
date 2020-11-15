@@ -4,7 +4,7 @@
   "description": "Serverless webpack example using Typescript",
   "main": "handler.js",
   "scripts": {
-    "dev": "serverless offline",
+    "dev": "IS_LOCAL=true serverless offline",
     "deploy:prod": "NODE_ENV=production serverless deploy --stage prod",
     "deploy:dev": "NODE_ENV=development serverless deploy --stage dev",
     "list:prod": "serverless deploy list functions --stage prod",
@@ -32,6 +32,7 @@
     "@typescript-eslint/parser": "^4.7.0",
     "eslint": "^7.13.0",
     "fork-ts-checker-webpack-plugin": "^3.0.1",
+    "puppeteer": "^5.4.1",
     "serverless-dotenv-plugin": "^3.1.0",
     "serverless-offline": "^6.8.0",
     "serverless-webpack": "^5.2.0",

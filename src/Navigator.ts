@@ -23,6 +23,7 @@ export class Navigator {
   async getHtml(link: string) {
     // If requires browser but not initialized, throw error.
     if (!this.initialized && this.isPuppeteer) {
+      console.log(this.err);
       throw new Error("Navigator is not initialized.");
     }
 
