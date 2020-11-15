@@ -18,7 +18,7 @@ for (const func in funcs) {
 }
 
 const serverlessConfiguration: Serverless = {
-  service: "serverless-typescript-template",
+  service: "webscraper-apis",
   frameworkVersion: "2",
   custom: {
     dotenv: {

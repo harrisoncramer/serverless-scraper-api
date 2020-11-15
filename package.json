@@ -1,8 +1,8 @@
 {
-  "name": "serverlesstypescript",
+  "name": "webscraper-apis",
   "version": "1.0.0",
-  "description": "Serverless webpack example using Typescript",
-  "main": "handler.js",
+  "description": "Webscrapers running on AWS that expose an api for getting html, text, and other information from urls via POST requests.",
+  "main": "index.ts",
   "scripts": {
     "dev": "IS_LOCAL=true serverless offline",
     "deploy:prod": "NODE_ENV=production serverless deploy --stage prod",
@@ -42,6 +42,6 @@
     "webpack": "^4.29.0",
     "webpack-node-externals": "^1.7.2"
   },
-  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
+  "author": "Harrison Cramer",
   "license": "MIT"
 }
