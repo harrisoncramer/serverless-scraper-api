@@ -15,7 +15,7 @@ export const createError = (e: Error): APIGatewayProxyResult => {
   console.error("❌", e);
   return {
     statusCode: 502,
-    body: JSON.stringify({ error: e.message }),
+    body: JSON.stringify({ message: e.message, name: e.name }),
   };
 };
 
