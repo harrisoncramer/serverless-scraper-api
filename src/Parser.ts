@@ -13,13 +13,41 @@ const convertToString = (el: cheerio.Element): string =>
 
 export class Parser {
   root: cheerio.Root;
+  private readonly oldRoot: cheerio.Root;
 
   constructor(public html: string, public discriminator: string = "*") {
     this.root = cheerio.load(html);
+    this.oldRoot = cheerio.load(html);
   }
 
   discriminate(query: string = "*"): void {
     this.discriminator = query;
+  }
+
+  activateSubroot(
+    query: string,
+    frontPad: string = "",
+    endPad: string = ""
+  ): void {
+    let newHtml = this.root(query).html();
+    this.root = cheerio.load(frontPad + newHtml + endPad);
+    console.log(this.root("*").html());
+  }
+
+  // Return oldRoot to becoming root.
+  deactivateSubroot(): void {
+    this.root = this.oldRoot;
+  }
+
+  getHtml(query: string): string[] {
+    return this.root(`${this.discriminator}`)
+      .find(query)
+      .toArray()
+      .map((x) => this.root(x).html());
+  }
+
+  getCheerios(query: string): cheerio.Cheerio {
+    return this.root(query);
   }
 
   // Strings...
@@ -54,6 +82,10 @@ export class Parser {
       .filter((x): x is string => isString(x))
       .filter(limitList(opts.limit));
     return opts.onlyUnique ? unique<string>(links) : links;
+  }
+
+  getLink(query: string): string {
+    return this.root(`${query} a`).attr("href");
   }
 
   // Elements
