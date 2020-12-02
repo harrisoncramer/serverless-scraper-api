@@ -25,6 +25,12 @@ const serverlessConfiguration: Serverless = {
     dotenv: {
       logging: false,
     },
+    // Set offline port for the http server and
+    // the lambdaPort to specify the AWS function
+    "serverless-offline": {
+      lambdaPort: 4000,
+      httpPort: 4001,
+    },
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,

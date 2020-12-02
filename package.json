@@ -2,7 +2,7 @@
   "name": "webscraper-apis",
   "version": "1.0.0",
   "description": "Webscrapers running on AWS that expose an api for getting html, text, and other information from urls via POST requests.",
-  "main": "index.ts",
+  " main": "index.ts",
   "scripts": {
     "dev": "IS_LOCAL=true serverless offline",
     "deploy:prod": "NODE_ENV=production serverless deploy --stage prod",
