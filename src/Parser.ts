@@ -51,6 +51,10 @@ export class Parser {
   }
 
   // Strings...
+  getText(query: string): string {
+    return this.root(`${this.discriminator} ${query}`).text();
+  }
+
   getTexts(query: string, opts: QueryOpts): string[] {
     return this.root(`${this.discriminator} ${query}`)
       .toArray()
