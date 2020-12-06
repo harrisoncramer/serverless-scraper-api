@@ -1,14 +1,15 @@
 //import { PuppeteerNavigator } from "../Navigator";
 import { Parser } from "../Parser";
-import { createError, createSuccess } from "./helpers";
-import { handler } from "./Types";
+import { createError, createSuccess, parseInput } from "./helpers";
+import { handler, HouseDisclosureInput } from "./Types";
 import axios from "axios";
 
-export const getHouseDisclosures: handler = async (_event, _context) => {
+export const getHouseDisclosures: handler = async (event, _context) => {
+  let input: HouseDisclosureInput = parseInput(event);
   try {
     let res = await axios.post(
       "https://disclosures-clerk.house.gov/PublicDisclosure/FinancialDisclosure/ViewMemberSearchResult",
-      "LastName=&FilingYear=2020&State=&District=",
+      `LastName=&FilingYear=${input.year}&State=${input.state}&District=`,
       {
         headers: {
           accept: "*/*",
@@ -44,9 +45,7 @@ export const getHouseDisclosures: handler = async (_event, _context) => {
       let nameSplit = name.split(",");
       let last = nameSplit[0];
       let first = nameSplit[1].replace(" Hon.. ", "");
-
       let link = baseLink.concat(parser.getLink(`tbody tr:nth-child(${row})`));
-
       let office = parser.getNthText(
         `tbody tr:nth-child(${row}) td:nth-child(2)`
       );
@@ -56,7 +55,6 @@ export const getHouseDisclosures: handler = async (_event, _context) => {
       let title = parser.getNthText(
         `tbody tr:nth-child(${row}) td:nth-child(4)`
       );
-
       results.push({ title, office, year, link, first, last });
     }
 
@@ -64,6 +62,4 @@ export const getHouseDisclosures: handler = async (_event, _context) => {
   } catch (err) {
     return createError(err);
   }
-
-  createSuccess("OK");
 };

@@ -16,6 +16,11 @@ export interface InputWithSelector extends InputType {
   limit?: number;
 }
 
+export interface HouseDisclosureInput extends InputType {
+  year: number;
+  state: string;
+}
+
 export type handler = (
   event: APIGatewayProxyEvent,
   context: Context,

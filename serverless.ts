@@ -6,13 +6,13 @@ const functions: Functions = {};
 for (const func in funcs) {
   functions[func] = {
     handler: `index.${func}`,
-    timeout: 60,
+    timeout: 30,
     events: [
       {
         http: {
           method: "post",
           path: `${func}`,
-          async: true,
+          //async: true,
         },
       },
     ],
