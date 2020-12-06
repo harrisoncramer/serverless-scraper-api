@@ -2,7 +2,6 @@
 import { Parser } from "../Parser";
 import { createError, createSuccess } from "./helpers";
 import { handler } from "./Types";
-import { isString } from "../util";
 import axios from "axios";
 
 export const getHouseDisclosures: handler = async (_event, _context) => {
@@ -37,19 +36,16 @@ export const getHouseDisclosures: handler = async (_event, _context) => {
     let html: string = res.data;
     const parser = new Parser(html);
     const rowLength = parser.getCheerios("tbody tr").length;
-    for (let i = 0; i < rowLength; i++) {
-      let row = i + 1;
+    const baseLink = "https://disclosures-clerk.house.gov";
+    for (let row = 1; row < rowLength + 1; row++) {
       let name = parser.getNthText(
         `tbody tr:nth-child(${row}) td:nth-child(1)`
       );
-      let last = name.split(",")[0];
-      let first = name.split(",")[1].replace(" Hon.. ", "");
+      let nameSplit = name.split(",");
+      let last = nameSplit[0];
+      let first = nameSplit[1].replace(" Hon.. ", "");
 
-      let baseLink = "https://disclosures-clerk.house.gov";
-      let link = parser.getLink(`tbody tr:nth-child(${row})`);
-      if (isString(link)) {
-        link = baseLink.concat(link);
-      }
+      let link = baseLink.concat(parser.getLink(`tbody tr:nth-child(${row})`));
 
       let office = parser.getNthText(
         `tbody tr:nth-child(${row}) td:nth-child(2)`
